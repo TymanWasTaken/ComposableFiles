@@ -73,7 +73,7 @@ fun MessageCard(msg: Message) {
     Row(modifier = Modifier.padding(all = 8.dp)) {
         AsyncImage(
             model = msg.avatarUrl,
-            contentDescription = "Tyman's avatar",
+            contentDescription = "${msg.author}'s avatar",
             modifier = Modifier
                 .size(size = 40.dp)
                 .clip(shape = CircleShape)
