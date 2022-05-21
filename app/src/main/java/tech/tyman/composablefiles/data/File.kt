@@ -1,17 +1,16 @@
 package tech.tyman.composablefiles.data
 
 import android.webkit.MimeTypeMap
-import androidx.compose.ui.graphics.vector.ImageVector
-import tech.tyman.composablefiles.utils.getIconForExtension
-import java.io.File
+import java.io.File as JavaFile
 
 data class File(
-    private val file: File
+    private val file: JavaFile
 ) {
     val name: String = file.name
     val path: String = file.absolutePath
     val extension: String = file.extension
     val mimeType: String? = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-    val lastModified = file.lastModified()
-    val iconInfo: Pair<ImageVector, String> get() = extension.getIconForExtension()
+    val lastModified get() = file.lastModified()
+    val isDirectory get() = file.isDirectory
+    val isFile get() = file.isFile
 }

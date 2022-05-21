@@ -4,17 +4,20 @@ import android.webkit.MimeTypeMap
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import tech.tyman.composablefiles.data.File
 
 /**
- * Simple util extension function to convert a String file extension to a pair of icon and description
+ *
  */
-fun String.getIconForExtension(): Pair<ImageVector, String> {
-    return if (extensionIconMap.containsKey(this)) {
-        extensionIconMap[this]!!
-    } else {
+val File.iconInfo: Pair<ImageVector, String> get() {
+    return if (this.isDirectory) { // Folders
+        Icons.Filled.Folder to "Folder"
+    } else if (extensionIconMap.containsKey(this.extension)) { // Check for overridden file extensions
+        extensionIconMap[this.extension]!!
+    } else { // Otherwise, check the mime type
         mimeTypeIconMap[
-                MimeTypeMap.getSingleton().getMimeTypeFromExtension(this)
-        ] ?: (Icons.Filled.QuestionMark to "Unknown")
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(this.extension)
+        ] ?: (Icons.Filled.QuestionMark to "Unknown") // If an unrecognized mime type, resort to "Unknown"
     }
 }
 
@@ -23,16 +26,17 @@ fun String.getIconForExtension(): Pair<ImageVector, String> {
  */
 private val mimeTypeIconMap = mapOf(
     // Archive formats
-    "application/gzip" to (Icons.Filled.Archive to "Archive"),
-    "application/x-7z-compressed" to (Icons.Filled.Archive to "Archive"),
-    "application/zip" to (Icons.Filled.Archive to "Archive"),
-    "application/java-archive" to (Icons.Filled.Archive to "Archive"),
+    "application/gzip" to (Icons.Filled.FolderZip to "Archive"),
+    "application/x-7z-compressed" to (Icons.Filled.FolderZip to "Archive"),
+    "application/zip" to (Icons.Filled.FolderZip to "Archive"),
+    "application/java-archive" to (Icons.Filled.FolderZip to "Archive"),
     "application/vnd.android.package-archive" to (Icons.Filled.Android to "Archive"),
     "application/rar" to (Icons.Filled.Android to "Archive"),
     // Documents
     "application/epub+zip" to (Icons.Filled.Book to "Epub Ebook"),
     "application/x-mobipocket-ebook" to (Icons.Filled.Book to "Mobi Ebook"),
     "application/pdf" to (Icons.Filled.PictureAsPdf to "Pdf"),
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation" to (Icons.Filled.TextSnippet to "Word document"),
     // Audio
     "audio/mpeg" to (Icons.Filled.AudioFile to "MP3 Audio"),
     "audio/x-wav" to (Icons.Filled.AudioFile to "WAV Audio"),
