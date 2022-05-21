@@ -1,10 +1,9 @@
 package tech.tyman.composablefiles.data
 
-import com.j256.simplemagic.ContentInfo
-import com.j256.simplemagic.ContentInfoUtil
+import android.webkit.MimeTypeMap
+import androidx.compose.ui.graphics.vector.ImageVector
+import tech.tyman.composablefiles.utils.getIconForExtension
 import java.io.File
-
-val magic = ContentInfoUtil()
 
 data class File(
     private val file: File
@@ -12,6 +11,7 @@ data class File(
     val name: String = file.name
     val path: String = file.absolutePath
     val extension: String = file.extension
-    val conentInfo: ContentInfo = magic.findMatch(file)
+    val mimeType: String? = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     val lastModified = file.lastModified()
+    val iconInfo: Pair<ImageVector, String> get() = extension.getIconForExtension()
 }
