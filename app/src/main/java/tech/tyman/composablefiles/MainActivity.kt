@@ -1,108 +1,44 @@
 package tech.tyman.composablefiles
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import tech.tyman.composablefiles.ui.screens.MainScreen
 import tech.tyman.composablefiles.ui.theme.ComposableFilesTheme
-import androidx.compose.foundation.lazy.items
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            ComposableFilesTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Conversation()
+
+        requestPermissions("MANAGE_EXTERNAL_STORAGE") { granted ->
+            if (granted) {
+                setContent {
+                    ComposableFilesTheme {
+                        // A surface container using the 'background' color from the theme
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            MainScreen()
+                        }
+                    }
                 }
+            } else {
+                Toast.makeText(this, "ComposableFiles requires access to your files to work!", Toast.LENGTH_SHORT).show()
+                finishAndRemoveTask()
             }
-        }
-    }
-}
-
-data class Message(val author: String, val body: String, val avatarUrl: String)
-
-@Composable
-fun Conversation() {
-    val messages = List(100) {
-        listOf(
-            Message(
-                "Tyman",
-                "I love jetpack compose",
-                "https://cdn.discordapp.com/avatars/487443883127472129/c4a0a7c5024629b55015dafaafd1b77c.webp?size=2048"
-            ),
-            Message(
-                "Ven",
-                "I also love jetpack compose",
-                "https://cdn.discordapp.com/avatars/343383572805058560/7248f0cff67f0582f60f7ee7871e3a02.webp?size=2048"
-            ),
-            Message(
-                "Xinto",
-                "I too, love jetpack compose",
-                "https://cdn.discordapp.com/avatars/423915768191647755/03a900cde1522cc53936638774a3060c.webp?size=2048"
-            ),
-            Message(
-                "Juby",
-                "I like jetpack compose",
-                "https://cdn.discordapp.com/avatars/324622488644616195/e6f68af616cdc26abfa2a233b0fff795.webp?size=2048"
-            ),
-            Message(
-                "Zt",
-                "I LOVE jetpack compose",
-                "https://cdn.discordapp.com/avatars/289556910426816513/ad1e67ba1db9188b924cdfddd4058012.webp?size=2048"
-            )
-        )
-    }.flatten()
-
-    LazyColumn(modifier = Modifier.padding(all = 8.dp)) {
-        items(
-            messages
-        ) { msg ->
-            MessageCard(msg)
-        }
-    }
-}
-
-@Composable
-fun MessageCard(msg: Message) {
-    Row(modifier = Modifier.padding(all = 8.dp)) {
-        AsyncImage(
-            model = msg.avatarUrl,
-            contentDescription = "${msg.author}'s avatar",
-            modifier = Modifier
-                .size(size = 40.dp)
-                .clip(shape = CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        )
-
-        Spacer(modifier = Modifier.padding(all = 8.dp))
-
-        Column {
-            Text(
-                text = msg.author,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = msg.body,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyLarge
-            )
         }
     }
 }
