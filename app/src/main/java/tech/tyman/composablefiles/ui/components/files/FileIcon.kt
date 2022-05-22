@@ -16,11 +16,11 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
-import tech.tyman.composablefiles.data.File
+import tech.tyman.composablefiles.data.FileEntry
 import tech.tyman.composablefiles.utils.iconInfo
 
 @Composable
-fun FileIcon(file: File) {
+fun FileIconComponent(file: FileEntry) {
     // Create image loader that supports images, svgs, gifs, and videos
     val imageLoader = ImageLoader.Builder(LocalContext.current)
         .components {
