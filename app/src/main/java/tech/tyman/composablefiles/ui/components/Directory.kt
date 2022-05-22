@@ -21,54 +21,31 @@ fun Directory(path: String) {
     var files by remember { mutableStateOf(folder.files) }
 
     Column {
-        SmallTopAppBar(
-            title = {
-                Column {
-                    Text(
-                        text = folder.name,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        text = folder.path,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                }
+        DirectoryTopBar(
+            folder = folder,
+            onReload = {
+                folder = Folder(JavaFile(folder.path))
+                files = folder.files
             },
-            navigationIcon = {
-                IconButton(
-                    onClick = {}
-                ) {
-                    Icon(Icons.Filled.Menu, contentDescription = "Menu")
-                }
-            },
-            actions = {
-                // Home button (return to /storage/emulated/0)
-                IconButton(onClick = {
-                    folder = Folder(JavaFile(Environment.getExternalStorageDirectory().absolutePath))
-                    files = folder.files
-                }) {
-                    Icon(Icons.Filled.Home, contentDescription = "Home")
-                }
-                // Refresh button (reload files)
-                IconButton(onClick = {
-                    folder = Folder(JavaFile(folder.path))
-                    files = folder.files
-                }) {
-                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
-                }
-            },
-            colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer
-            )
+            onHome = {
+                folder = Folder(JavaFile(Environment.getExternalStorageDirectory().absolutePath))
+                files = folder.files
+            }
         )
 
 //        Spacer(modifier = Modifier.padding(8.dp))
 
-        FilesList(folder.getParent(), files) {
-            if (!it.isDirectory) return@FilesList
-            folder = Folder(it.javaFile)
-            files = folder.files
-        }
+        FilesList(
+            parent = folder.getParent(),
+            files = files,
+            onFileClick = {
+                if (!it.isDirectory) return@FilesList
+                folder = Folder(it.javaFile)
+                files = folder.files
+            },
+            onFileLongClick = {
+
+            }
+        )
     }
 }

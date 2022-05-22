@@ -1,6 +1,8 @@
 package tech.tyman.composablefiles.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,23 +32,29 @@ import tech.tyman.composablefiles.data.getParent
 import tech.tyman.composablefiles.utils.iconInfo
 
 @Composable
-fun FilesList(parent: File?, files: List<File>, onFileClick: (file: File) -> Unit) {
+fun FilesList(parent: File?, files: List<File>, onFileClick: (file: File) -> Unit, onFileLongClick: (file: File) -> Unit) {
     val displayedFiles = if (parent != null) listOf(parent, *files.toTypedArray()) else files
     LazyColumn(modifier = Modifier.padding(all = 8.dp)) {
         items(displayedFiles.sortedBy { it.extension }) { file ->
-            FileEntry(file) {
-                onFileClick(file)
-            }
+            FileEntry(
+                file = file,
+                onClick = { onFileClick(file) },
+                onLongClick =  { onFileLongClick(file) }
+            )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FileEntry(file: File, onClick: () -> Unit) {
+fun FileEntry(file: File, onClick: () -> Unit, onLongClick: () -> Unit) {
     Row(
         modifier = Modifier
             .padding(all = 8.dp)
-            .clickable(onClick = onClick)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .fillMaxWidth()
     ) {
         FileIcon(file)
