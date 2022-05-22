@@ -12,9 +12,6 @@ import java.io.File as JavaFile
 @Composable
 fun MainScreen() {
     Directory(
-        path = Paths.get(
-            Environment.getExternalStorageDirectory().absolutePath,
-            "Download"
-        ).toString()
+        path = Environment.getExternalStorageDirectory().absolutePath
     )
 }

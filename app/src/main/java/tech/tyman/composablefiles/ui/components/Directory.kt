@@ -1,12 +1,15 @@
 package tech.tyman.composablefiles.ui.components
 
+import android.os.Environment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import tech.tyman.composablefiles.data.Folder
+import tech.tyman.composablefiles.data.getParent
 import java.io.File as JavaFile
 
 @Composable
@@ -39,10 +42,17 @@ fun Directory(path: String) {
                 }
             },
             actions = {
+                // Home button (return to /storage/emulated/0)
                 IconButton(onClick = {
-                    val newFolder = Folder(JavaFile(path))
-                    folder = newFolder
-                    files = newFolder.files
+                    folder = Folder(JavaFile(Environment.getExternalStorageDirectory().absolutePath))
+                    files = folder.files
+                }) {
+                    Icon(Icons.Filled.Home, contentDescription = "Home")
+                }
+                // Refresh button (reload files)
+                IconButton(onClick = {
+                    folder = Folder(JavaFile(folder.path))
+                    files = folder.files
                 }) {
                     Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                 }
@@ -55,6 +65,10 @@ fun Directory(path: String) {
 
 //        Spacer(modifier = Modifier.padding(8.dp))
 
-        FilesList(files)
+        FilesList(folder.getParent(), files) {
+            if (!it.isDirectory) return@FilesList
+            folder = Folder(it.javaFile)
+            files = folder.files
+        }
     }
 }
