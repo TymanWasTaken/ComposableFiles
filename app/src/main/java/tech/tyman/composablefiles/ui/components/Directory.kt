@@ -5,28 +5,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import tech.tyman.composablefiles.data.File
+import androidx.compose.runtime.*
 import tech.tyman.composablefiles.data.Folder
-
-fun <T> SnapshotStateList<T>.updateList(newList: List<T>){
-    clear()
-    addAll(newList)
-}
+import java.io.File as JavaFile
 
 @Composable
-fun Directory(folder: Folder) {
-    val filesList = remember { mutableStateListOf<File>() }
-    folder.loadFiles()
-    filesList.updateList(folder.files!!)
+fun Directory(path: String) {
+    var folder by remember { mutableStateOf(
+        Folder(JavaFile(path))
+    ) }
+    // There is likely a better way to do this, but I do not know how, so I just create another mutable state
+    var files by remember { mutableStateOf(folder.files) }
 
     Column {
         SmallTopAppBar(
             title = {
-                Text(folder.name)
+                Column {
+                    Text(
+                        text = folder.name,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = folder.path,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
             },
             navigationIcon = {
                 IconButton(
@@ -37,8 +40,9 @@ fun Directory(folder: Folder) {
             },
             actions = {
                 IconButton(onClick = {
-                    folder.loadFiles()
-                    filesList.updateList(folder.files!!)
+                    val newFolder = Folder(JavaFile(path))
+                    folder = newFolder
+                    files = newFolder.files
                 }) {
                     Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                 }
@@ -51,6 +55,6 @@ fun Directory(folder: Folder) {
 
 //        Spacer(modifier = Modifier.padding(8.dp))
 
-        FilesList(filesList)
+        FilesList(files)
     }
 }

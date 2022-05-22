@@ -11,8 +11,10 @@ import java.io.File as JavaFile
 
 @Composable
 fun MainScreen() {
-    val javaDir = JavaFile(
-        Paths.get(Environment.getExternalStorageDirectory().absolutePath, "Download").toUri()
+    Directory(
+        path = Paths.get(
+            Environment.getExternalStorageDirectory().absolutePath,
+            "Download"
+        ).toString()
     )
-    Directory(folder = Folder(javaDir))
 }

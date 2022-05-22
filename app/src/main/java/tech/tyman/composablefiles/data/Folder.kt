@@ -6,20 +6,12 @@ data class Folder(
     private val file: JavaFile
 ) {
     val fileCount
-        get() = files?.count() ?: 0
+        get() = files.count()
     val name: String = file.name
-    val path = file.absolutePath
-
-    var files: List<File>? = null
-        private set
+    val path: String = file.absolutePath
+    val files = (file.listFiles() ?: arrayOf()).map { File(it) }
 
     init {
-        require(file.isDirectory) {
-            "file argument must be a directory"
-        }
-    }
-
-    fun loadFiles() {
-        files = file.listFiles()?.map { File(it) }?.toList()
+        require(file.isDirectory) { "file argument must be a directory" }
     }
 }
