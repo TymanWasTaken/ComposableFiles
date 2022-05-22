@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import tech.tyman.composablefiles.data.Folder
 import tech.tyman.composablefiles.data.getParent
+import tech.tyman.composablefiles.ui.components.files.FileList
 import java.io.File as JavaFile
 
 @Composable
@@ -35,11 +36,11 @@ fun Directory(path: String) {
 
 //        Spacer(modifier = Modifier.padding(8.dp))
 
-        FilesList(
+        FileList(
             parent = folder.getParent(),
             files = files,
             onFileClick = {
-                if (!it.isDirectory) return@FilesList
+                if (!it.isDirectory) return@FileList
                 folder = Folder(it.javaFile)
                 files = folder.files
             },
