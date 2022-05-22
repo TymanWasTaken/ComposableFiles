@@ -1,7 +1,11 @@
 buildscript {
     ext {
+        // Library versions
         compose_version = '1.2.0-beta02'
         coil_version = '2.1.0'
+        // App version information
+        app_version = '0.0.1' // The front facing version code, should follow SemVer
+        app_version_code = 1 // The internal code, used to determine updated vs less updated versions, should be incremented by 1 every new update
     }
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
