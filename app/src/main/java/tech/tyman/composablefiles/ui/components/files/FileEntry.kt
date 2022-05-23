@@ -17,19 +17,14 @@ import tech.tyman.composablefiles.utils.iconInfo
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FileEntryComponent(file: FileEntry, onClick: () -> Unit, selected: Boolean, onFileSelect: () -> Unit, onFileUnselect: () -> Unit) {
+fun FileEntryComponent(file: FileEntry, selected: Boolean, onClick: () -> Unit, onLongClick: () -> Unit) {
     val selectedState by derivedStateOf { selected }
 
     Row(
         modifier = Modifier
             .combinedClickable(
                 onClick = onClick,
-                onLongClick = {
-                    when (selectedState) {
-                        true -> onFileUnselect()
-                        false -> onFileSelect()
-                    }
-                }
+                onLongClick = onLongClick
             )
             .fillMaxWidth()
             .background(
