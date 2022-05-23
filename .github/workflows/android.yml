@@ -19,9 +19,7 @@ jobs:
           cache: 'gradle'
 
       - name: Build and assemble APK
-        run: |
-          touch keystore.properties
-          ./gradlew assembleDebug
+        run: ./gradlew assembleDebug
 
       - name: Upload apk as artifact
         uses: actions/upload-artifact@v2
