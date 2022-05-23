@@ -5,35 +5,32 @@ import tech.tyman.composablefiles.data.FileSystemEntry
 import java.io.File
 
 class LocalFileSystem : FileSystem() {
-    override fun readDir(path: String): List<FileSystemEntry> = File(path).listFiles()?.map {
-        LocalFileSystemEntry(this, path)
-    } ?: throw IllegalArgumentException("Path argument was invalid")
-
-    override fun createDir(path: String, recursive: Boolean): Boolean =
-        if (recursive) File(path).mkdirs()
-        else File(path).mkdir()
-
-    override fun deleteDir(path: String): Boolean = File(path).deleteRecursively()
-
-    override fun getParent(path: String): LocalFileSystemEntry? {
-        return LocalFileSystemEntry(this, File(path).parentFile?.absolutePath ?: return null)
-    }
-
-    override fun readFile(path: String): String = File(path).readText()
-
-    override fun getFile(path: String) = LocalFileSystemEntry(this, path)
-
-    override fun writeFile(path: String, data: String) = File(path).writeText(data)
-
-    override fun deleteFile(path: String): Boolean = File(path).delete()
+    override fun getEntry(path: String) = LocalFileSystemEntry(this, File(path))
+    override fun load() = Unit
 }
 
 class LocalFileSystemEntry(
     override val fileSystem: FileSystem,
-    override val path: String
+    private val javaFile: File
 ) : FileSystemEntry() {
-    private val javaFile = File(path)
+    override val path: String = javaFile.absolutePath
     override val name: String = javaFile.name
+    override val extension: String = javaFile.extension
     override val lastModified: Long = javaFile.lastModified()
     override val isDirectory: Boolean = javaFile.isDirectory
+
+    override fun readString(): String = javaFile.readText()
+
+    override fun writeString(data: String): Boolean {
+        javaFile.writeText(data)
+        return true
+    }
+
+    override fun delete(recursive: Boolean): Boolean = if (recursive) javaFile.deleteRecursively() else javaFile.delete()
+
+    override fun listFiles(): List<LocalFileSystemEntry>? = javaFile.listFiles()?.map { LocalFileSystemEntry(fileSystem, it) }
+
+    override fun getParent(): LocalFileSystemEntry? {
+        return LocalFileSystemEntry(fileSystem, javaFile.parentFile ?: return null)
+    }
 }

@@ -4,7 +4,9 @@ import android.os.Environment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import okio.IOException
 import tech.tyman.composablefiles.data.*
+import tech.tyman.composablefiles.data.component.DirectoryEntry
 import tech.tyman.composablefiles.data.component.DirectoryInfo
 import tech.tyman.composablefiles.ui.components.files.FileListComponent
 import tech.tyman.composablefiles.utils.popAll
@@ -14,9 +16,9 @@ import tech.tyman.composablefiles.utils.showToast
 @Composable
 fun DirectoryComponent(path: String, fileSystem: FileSystem) {
     var directory by remember { mutableStateOf(
-        DirectoryInfo(fileSystem, path)
+        DirectoryInfo(fileSystem.getEntry(path))
     ) }
-    val selectedFiles = remember { mutableStateListOf<FileSystemEntry>() }
+    val selectedFiles = remember { mutableStateListOf<DirectoryEntry>() }
     // There is likely a better way to do this, but I do not know how, so I just create another mutable state
     var files by remember { mutableStateOf(directory.files) }
 
@@ -39,7 +41,7 @@ fun DirectoryComponent(path: String, fileSystem: FileSystem) {
                         files = directory.files
                     }
                     TopBarAction.DELETE -> {
-                        val failed = mutableListOf<FileSystemEntry>()
+                        val failed = mutableListOf<DirectoryEntry>()
                         selectedFiles.popAll { entry ->
                             if (!entry.delete()) failed.add(entry)
                         }
@@ -66,10 +68,17 @@ fun DirectoryComponent(path: String, fileSystem: FileSystem) {
             files = files,
             selectedFiles = selectedFiles,
             onFileClick = {
+                // TODO Don't ignore clicking on files
                 if (!it.isDirectory) return@FileListComponent
+                // Clear all selected files
                 selectedFiles.clear()
-                folder = Folder(it.javaFile)
-                files = folder.files
+                // Set state to the new directory, catching any errors
+                try {
+                    directory = DirectoryInfo(it.fileSystemEntry)
+                    files = directory.files
+                } catch (e: IOException) {
+                    context.showToast("Unable to read directory!")
+                }
             },
             onFileSelect = { selectedFiles.replaceWith(it) }
         )

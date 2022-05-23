@@ -1,13 +1,17 @@
 package tech.tyman.composablefiles.data.component
 
-import tech.tyman.composablefiles.data.FileSystem
+import android.webkit.MimeTypeMap
+import tech.tyman.composablefiles.data.FileSystemEntry
 
 data class DirectoryEntry(
-    val fileSystem: FileSystem,
-    val path: String
+    val fileSystemEntry: FileSystemEntry,
+    val name: String = fileSystemEntry.name
 ) {
-    val fileSystemEntry = fileSystem.getFile(path)
-    val name = fileSystemEntry.name
+    val extension = fileSystemEntry.extension
+    val path = fileSystemEntry.path
+    val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     val isDirectory = fileSystemEntry.isDirectory
     val lastModified = fileSystemEntry.lastModified
+
+    fun delete(recursive: Boolean = false) = fileSystemEntry.delete(recursive)
 }
