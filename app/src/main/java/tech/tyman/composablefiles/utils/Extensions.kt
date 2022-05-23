@@ -1,8 +1,13 @@
 package tech.tyman.composablefiles.utils
 
 import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.widget.Toast
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Utility extension function to replace an entire [SnapshotStateList] with one function
