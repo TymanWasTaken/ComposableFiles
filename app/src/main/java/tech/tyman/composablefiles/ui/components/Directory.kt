@@ -1,12 +1,10 @@
 package tech.tyman.composablefiles.ui.components
 
 import android.os.Environment
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import tech.tyman.composablefiles.data.FileEntry
-import tech.tyman.composablefiles.data.Folder
 import tech.tyman.composablefiles.data.getParent
 import tech.tyman.composablefiles.ui.components.files.FileListComponent
 import tech.tyman.composablefiles.utils.popAll
