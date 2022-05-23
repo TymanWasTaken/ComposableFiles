@@ -5,11 +5,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import tech.tyman.composablefiles.data.component.DirectoryInfo
 
 @Composable
 fun DirectoryTopBarComponent(
     title: String,
-    folder: Folder,
+    directory: DirectoryInfo,
     onButton: (type: TopBarAction) -> Unit,
     buttonState: TopBarState
 ) {
@@ -21,7 +22,7 @@ fun DirectoryTopBarComponent(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    text = folder.path,
+                    text = directory.path,
                     style = MaterialTheme.typography.titleSmall
                 )
             }

@@ -4,48 +4,47 @@ import android.os.Environment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import tech.tyman.composablefiles.data.FileEntry
-import tech.tyman.composablefiles.data.getParent
+import tech.tyman.composablefiles.data.*
+import tech.tyman.composablefiles.data.component.DirectoryInfo
 import tech.tyman.composablefiles.ui.components.files.FileListComponent
 import tech.tyman.composablefiles.utils.popAll
 import tech.tyman.composablefiles.utils.replaceWith
 import tech.tyman.composablefiles.utils.showToast
-import java.io.File as JavaFile
 
 @Composable
-fun DirectoryComponent(path: String) {
-    var folder by remember { mutableStateOf(
-        Folder(JavaFile(path))
+fun DirectoryComponent(path: String, fileSystem: FileSystem) {
+    var directory by remember { mutableStateOf(
+        DirectoryInfo(fileSystem, path)
     ) }
-    val selectedFiles = remember { mutableStateListOf<FileEntry>() }
+    val selectedFiles = remember { mutableStateListOf<FileSystemEntry>() }
     // There is likely a better way to do this, but I do not know how, so I just create another mutable state
-    var files by remember { mutableStateOf(folder.files) }
+    var files by remember { mutableStateOf(directory.files) }
 
     val context = LocalContext.current
 
     Column {
         DirectoryTopBarComponent(
-            title = if (selectedFiles.size > 0) selectedFiles.size.toString() else folder.name,
-            folder = folder,
+            title = if (selectedFiles.size > 0) selectedFiles.size.toString() else directory.name,
+            directory = directory,
             onButton = {
                 when (it) {
                     TopBarAction.HOME -> {
                         selectedFiles.clear()
-                        folder = folder.clone(path = Environment.getExternalStorageDirectory().absolutePath)
-                        files = folder.files
+                        directory = directory.clone(Environment.getExternalStorageDirectory().absolutePath)
+                        files = directory.files
                     }
                     TopBarAction.RELOAD -> {
                         selectedFiles.clear()
-                        folder = folder.clone()
-                        files = folder.files
+                        directory = directory.clone()
+                        files = directory.files
                     }
                     TopBarAction.DELETE -> {
-                        val failed = mutableListOf<FileEntry>()
-                        selectedFiles.popAll { file ->
-                            if (!file.delete()) failed.add(file)
+                        val failed = mutableListOf<FileSystemEntry>()
+                        selectedFiles.popAll { entry ->
+                            if (!entry.delete()) failed.add(entry)
                         }
-                        folder = folder.clone()
-                        files = folder.files
+                        directory = directory.clone()
+                        files = directory.files
                         if (failed.size > 0) context.showToast("Failed to delete some files: ${
                             failed.joinToString(", ") { f -> f.name }
                         }")
@@ -63,7 +62,7 @@ fun DirectoryComponent(path: String) {
         )
 
         FileListComponent(
-            parent = folder.getParent(),
+            parent = directory.getParent(),
             files = files,
             selectedFiles = selectedFiles,
             onFileClick = {
