@@ -12,12 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import tech.tyman.composablefiles.data.FileEntry
+import tech.tyman.composablefiles.data.component.DirectoryEntry
 import tech.tyman.composablefiles.utils.iconInfo
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FileEntryComponent(file: FileEntry, selected: Boolean, onClick: () -> Unit, onLongClick: () -> Unit) {
+fun DirectoryEntryComponent(file: DirectoryEntry, selected: Boolean, onClick: () -> Unit, onLongClick: () -> Unit) {
     val selectedState by derivedStateOf { selected }
 
     Row(

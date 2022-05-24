@@ -4,13 +4,13 @@ import android.webkit.MimeTypeMap
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import tech.tyman.composablefiles.data.FileEntry
+import tech.tyman.composablefiles.data.component.DirectoryEntry
 
 /**
- * An extension property to get a [Pair] of an icon and a description of that icon, from a [FileEntry],
+ * An extension property to get a [Pair] of an icon and a description of that icon, from a [DirectoryEntry],
  * based on the mime type, extension, and if it is a folder or not.
  */
-val FileEntry.iconInfo: Pair<ImageVector, String> get() {
+val DirectoryEntry.iconInfo: Pair<ImageVector, String> get() {
     return if (this.isDirectory) { // Folders
         Icons.Filled.Folder to "Folder"
     } else if (extensionIconMap.containsKey(this.extension)) { // Check for overridden file extensions
