@@ -15,6 +15,7 @@ import tech.tyman.composablefiles.utils.showToast
 
 @Composable
 fun DirectoryComponent(path: String, fileSystem: FileSystem) {
+    fileSystem.load()
     var directory by remember { mutableStateOf(
         DirectoryInfo(fileSystem.getEntry(path))
     ) }
