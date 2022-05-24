@@ -4,6 +4,7 @@ import com.jcraft.jsch.*
 import tech.tyman.composablefiles.data.FileSystem
 import tech.tyman.composablefiles.data.FileSystemEntry
 import java.io.File
+import kotlin.io.path.Path
 
 class SftpFileSystem(
     private val username: String,
@@ -14,10 +15,11 @@ class SftpFileSystem(
     private val onMessage: (message: String) -> Unit
 ) : FileSystem() {
     private val jSch = JSch()
-    private lateinit var session: Session
-    private lateinit var channel: ChannelSftp
+    lateinit var session: Session
+    lateinit var channel: ChannelSftp
 
     override fun load() {
+        super.load()
         val userInfo = SftpUserInfo(
             onPasswordPrompt,
             onConfirmationPrompt,
@@ -32,14 +34,25 @@ class SftpFileSystem(
         } as ChannelSftp
     }
 
+    override fun unload() {
+        super.unload()
+        channel.disconnect()
+        session.disconnect()
+    }
+
     override fun getEntry(path: String): FileSystemEntry {
         val stat = channel.stat(path)
+        return SftpFileSystemEntry(
+            fileSystem = this,
+            sftpATTRS = stat,
+            path = path
+        )
     }
 }
 
 class SftpFileSystemEntry(
-    override val fileSystem: FileSystem,
-    val sftpATTRS: SftpATTRS,
+    sftpATTRS: SftpATTRS,
+    override val fileSystem: SftpFileSystem,
     override val path: String
 ) : FileSystemEntry() {
     override val name: String = File(path).name
@@ -47,24 +60,56 @@ class SftpFileSystemEntry(
     override val lastModified: Long = sftpATTRS.mTime.toLong()
     override val isDirectory: Boolean = sftpATTRS.isDir
 
-    override fun readString(): String? {
-        return files
+    override fun readBytes(): ByteArray {
+        val stream = fileSystem.channel.get(path)
+        return stream.readBytes().also {
+            stream.close()
+        }
     }
 
-    override fun writeString(data: String): Boolean {
-        TODO("Not yet implemented")
+    override fun writeBytes(data: ByteArray): Boolean {
+        try {
+            val stream = fileSystem.channel.put(path)
+            stream.write(data).also {
+                stream.close()
+            }
+        } catch (e: SftpException) {
+            e.printStackTrace()
+            return false
+        }
+        return true
     }
 
     override fun delete(recursive: Boolean): Boolean {
-        TODO("Not yet implemented")
+        try {
+            if (recursive) fileSystem.channel.rmdir(path)
+            else fileSystem.channel.rm(path)
+        } catch (e: SftpException) {
+            e.printStackTrace()
+            return false
+        }
+        return true
     }
 
-    override fun listFiles(): List<FileSystemEntry>? {
-        TODO("Not yet implemented")
+    override fun listFiles(): List<SftpFileSystemEntry> {
+        val ls = fileSystem.channel.ls(path)
+        return ls.map {
+            SftpFileSystemEntry(
+                fileSystem = fileSystem,
+                sftpATTRS = it.attrs,
+                path = Path(path, it.filename).toString()
+            )
+        }
     }
 
-    override fun getParent(): FileSystemEntry? {
-        TODO("Not yet implemented")
+    override fun getParent(): SftpFileSystemEntry? {
+        val parentPath = File(path).parent ?: return null
+        val stat = fileSystem.channel.stat(parentPath)
+        return SftpFileSystemEntry(
+            fileSystem = fileSystem,
+            sftpATTRS = stat,
+            path = parentPath
+        )
     }
 
 }

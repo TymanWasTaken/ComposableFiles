@@ -19,10 +19,10 @@ class LocalFileSystemEntry(
     override val lastModified: Long = javaFile.lastModified()
     override val isDirectory: Boolean = javaFile.isDirectory
 
-    override fun readString(): String = javaFile.readText()
+    override fun readBytes(): ByteArray = javaFile.readBytes()
 
-    override fun writeString(data: String): Boolean {
-        javaFile.writeText(data)
+    override fun writeBytes(data: ByteArray): Boolean {
+        javaFile.writeBytes(data)
         return true
     }
 

@@ -8,8 +8,8 @@ abstract class FileSystemEntry {
     abstract val lastModified: Long
     abstract val isDirectory: Boolean
 
-    abstract fun readString(): String?
-    abstract fun writeString(data: String): Boolean
+    abstract fun readBytes(): ByteArray?
+    abstract fun writeBytes(data: ByteArray): Boolean
     abstract fun delete(recursive: Boolean = false): Boolean
     abstract fun listFiles(): List<FileSystemEntry>?
     abstract fun getParent(): FileSystemEntry?
