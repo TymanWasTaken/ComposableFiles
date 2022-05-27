@@ -18,8 +18,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
-import tech.tyman.composablefiles.ui.screens.MainScreen
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import tech.tyman.composablefiles.data.filesystems.LocalFileSystem
+import tech.tyman.composablefiles.ui.screens.DirectoryScreen
 import tech.tyman.composablefiles.ui.theme.ComposableFilesTheme
+import tech.tyman.composablefiles.utils.urlEncode
+import java.lang.IllegalArgumentException
 
 class MainActivity : ComponentActivity() {
     /**
@@ -89,12 +97,39 @@ class MainActivity : ComponentActivity() {
     private fun onPermissionsGranted() {
         setContent {
             ComposableFilesTheme {
+                val navController = rememberNavController()
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    NavHost(navController = navController, startDestination = "directory/local/${Environment.getExternalStorageDirectory().absolutePath.urlEncode()}") {
+                        composable(
+                            route = "directory/{fileSystem}/{path}",
+                            arguments = listOf(
+                                // A key that is parsed into an object (i.e. "local" -> LocalFileSystem)
+                                navArgument("fileSystem") {
+                                    type = NavType.StringType
+                                },
+                                // A url encoded path string
+                                navArgument("path") {
+                                    type = NavType.
+                                }
+                            )
+                        ) { entry ->
+                            DirectoryScreen(
+                                path = entry.arguments!!.getString("path")!!,
+                                // New file systems should add an entry here for navigation
+                                fileSystem = when (entry.arguments!!.getString("fileSystem")!!) {
+                                    "local" -> LocalFileSystem()
+                                    else -> throw IllegalArgumentException("An invalid filesystem key was provided for navigation")
+                                }
+                            )
+                        }
+//                        composable("settings") { SettingsScreen(/*...*/) }
+                    }
+
                 }
             }
         }

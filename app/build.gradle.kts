@@ -5,6 +5,7 @@ import java.util.*
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -90,6 +91,7 @@ android {
 
 dependencies {
     val composeVersion: String by rootProject.extra
+    val navVersion: String by rootProject.extra
     val coilVersion: String by rootProject.extra
 
     implementation("androidx.core:core-ktx:1.7.0")
@@ -101,6 +103,8 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.4.0")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
+
+    implementation("androidx.navigation:navigation-compose:$navVersion")
 
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-compose:$coilVersion")
