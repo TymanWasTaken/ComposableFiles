@@ -18,16 +18,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import tech.tyman.composablefiles.data.FileSystemType
 import tech.tyman.composablefiles.data.filesystems.LocalFileSystem
+import tech.tyman.composablefiles.data.navigation.Location
+import tech.tyman.composablefiles.data.navigation.LocationType
 import tech.tyman.composablefiles.ui.screens.DirectoryScreen
 import tech.tyman.composablefiles.ui.theme.ComposableFilesTheme
 import tech.tyman.composablefiles.utils.urlEncode
-import java.lang.IllegalArgumentException
 
 class MainActivity : ComponentActivity() {
     /**
@@ -98,32 +99,34 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposableFilesTheme {
                 val navController = rememberNavController()
+                val defaultLocation = Location(
+                    fileSystem = FileSystemType.LOCAL,
+                    path = Environment.getExternalStorageDirectory().absolutePath
+                )
 
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(navController = navController, startDestination = "directory/local/${Environment.getExternalStorageDirectory().absolutePath.urlEncode()}") {
+                    NavHost(navController = navController, startDestination = "directory/{location}") {
                         composable(
-                            route = "directory/{fileSystem}/{path}",
+                            route = "directory/{location}",
+
                             arguments = listOf(
                                 // A key that is parsed into an object (i.e. "local" -> LocalFileSystem)
-                                navArgument("fileSystem") {
-                                    type = NavType.StringType
-                                },
-                                // A url encoded path string
-                                navArgument("path") {
-                                    type = NavType.
+                                navArgument("location") {
+                                    type = LocationType()
+                                    defaultValue = defaultLocation
                                 }
                             )
                         ) { entry ->
+                            val location = entry.arguments!!.getParcelable<Location>("location")!!
                             DirectoryScreen(
-                                path = entry.arguments!!.getString("path")!!,
+                                path = location.path,
                                 // New file systems should add an entry here for navigation
-                                fileSystem = when (entry.arguments!!.getString("fileSystem")!!) {
-                                    "local" -> LocalFileSystem()
-                                    else -> throw IllegalArgumentException("An invalid filesystem key was provided for navigation")
+                                fileSystem = when (location.fileSystem) {
+                                    FileSystemType.LOCAL -> LocalFileSystem()
                                 }
                             )
                         }

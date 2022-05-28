@@ -5,6 +5,7 @@ import java.util.*
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "1.6.21"
     id("kotlin-parcelize")
 }
 
@@ -111,6 +112,8 @@ dependencies {
     implementation("io.coil-kt:coil-gif:$coilVersion")
     implementation("io.coil-kt:coil-svg:$coilVersion")
     implementation("io.coil-kt:coil-video:$coilVersion")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
 //    implementation("com.github.mwiede:jsch:0.2.1")
 }
