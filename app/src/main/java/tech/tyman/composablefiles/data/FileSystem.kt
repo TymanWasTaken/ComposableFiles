@@ -1,5 +1,7 @@
 package tech.tyman.composablefiles.data
 
+import tech.tyman.composablefiles.data.filesystems.LocalFileSystem
+
 /**
  * An abstract class to implement another filesystem that can be used in the app (for example over the network)
  */
@@ -14,4 +16,11 @@ abstract class FileSystem {
     }
 
     abstract fun getEntry(path: String): FileSystemEntry
+}
+
+/**
+ * An enum containing all filesystem types, should be updated when filesystem types are added/removed
+ */
+enum class FileSystemType {
+    LOCAL
 }

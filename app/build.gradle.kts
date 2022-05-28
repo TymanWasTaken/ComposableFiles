@@ -5,6 +5,8 @@ import java.util.*
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "1.6.21"
+    id("kotlin-parcelize")
 }
 
 android {
@@ -90,6 +92,7 @@ android {
 
 dependencies {
     val composeVersion: String by rootProject.extra
+    val navVersion: String by rootProject.extra
     val coilVersion: String by rootProject.extra
 
     implementation("androidx.core:core-ktx:1.7.0")
@@ -102,11 +105,15 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
 
+    implementation("androidx.navigation:navigation-compose:$navVersion")
+
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-compose:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
     implementation("io.coil-kt:coil-svg:$coilVersion")
     implementation("io.coil-kt:coil-video:$coilVersion")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
 //    implementation("com.github.mwiede:jsch:0.2.1")
 }

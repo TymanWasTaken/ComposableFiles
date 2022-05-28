@@ -1,13 +1,9 @@
 package tech.tyman.composablefiles.utils
 
 import android.content.Context
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.widget.Toast
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.platform.LocalContext
+import java.net.URLEncoder
 
 /**
  * Utility extension function to replace an entire [SnapshotStateList] with one function
@@ -30,4 +26,11 @@ inline fun <T> MutableList<T>.popAll(action: (T) -> Unit) {
  */
 fun Context.showToast(text: String, long: Boolean = false) {
     Toast.makeText(this, text, if (long) Toast.LENGTH_LONG else Toast.LENGTH_SHORT).show()
+}
+
+/**
+ * Extension function to URL encode a string
+ */
+fun String.urlEncode(): String {
+    return URLEncoder.encode(this, Charsets.UTF_8.toString())
 }

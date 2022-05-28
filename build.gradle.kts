@@ -2,6 +2,7 @@ buildscript {
     extra.apply {
         // Library versions
         set("composeVersion", "1.2.0-beta02")
+        set("navVersion", "2.4.2")
         set("coilVersion", "2.1.0")
         // App version information
         set("appVersion", "0.1.1") // The front facing version code, should follow SemVer
